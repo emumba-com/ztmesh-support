@@ -40,7 +40,7 @@ sed -i "s~value_3~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/acces
 sed -i "s~value_4~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/secret-access-key?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 sed -i "s~value_5~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-attach?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 sed -i "s~value_6~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-address?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
-sed -i "s~value_7~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/side-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
+sed -i "s~value_7~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/site-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 
 cat $FILEPATH/config.json
 
