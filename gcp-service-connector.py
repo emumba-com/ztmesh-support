@@ -22,6 +22,9 @@ def GlobalComputeUrl(project, collection, name):
   return ''.join([COMPUTE_URL_BASE, 'projects/', project,
                   '/global/', collection, '/', name])
 
+def SubNetworksComputeUrl(project, region, name):
+  return ''.join([COMPUTE_URL_BASE, 'projects/', project,
+                  '/regions/', region, '/subnetworks/', name])
 
 def ZonalComputeUrl(project, zone, collection, name):
   return ''.join([COMPUTE_URL_BASE, 'projects/', project,
@@ -59,7 +62,9 @@ def GenerateConfig(context):
               'type': 'ONE_TO_ONE_NAT'
               }],
           'network': GlobalComputeUrl(
-              context.env['project'], 'networks', context.properties['vpc'])
+              context.env['project'], 'networks', context.properties['vpc']),
+          'subnetwork': SubNetworksComputeUrl(
+              context.env['project'], context.properties['region'], context.properties['subnet_name']),
           }]
       }
 
