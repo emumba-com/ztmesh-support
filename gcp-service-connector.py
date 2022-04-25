@@ -46,6 +46,14 @@ def GenerateConfig(context):
               'value': context.properties['startup-script']
           }]
       },
+       "serviceAccounts": [
+        {
+          "email": context.properties['sa-email'],
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        }
+      ],
       'disks': [{
           'deviceName': 'boot',
           'type': 'PERSISTENT',
