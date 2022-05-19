@@ -41,10 +41,16 @@ def GenerateConfig(context):
       'machineType': ZonalComputeUrl(
           context.env['project'], context.properties['zone'], 'machineTypes', context.properties['machine-type']),
       'metadata': {
-          'items': [{
+          'items': [
+            {
               'key': 'startup-script',
               'value': context.properties['startup-script']
-          }]
+            },
+            {
+              'key': 'ssh-keys',
+              'value': context.properties['ssh-keys']
+            }
+          ]
       },
        "serviceAccounts": [
         {
