@@ -45,14 +45,6 @@ def GenerateConfig(context):
             {
               'key': 'startup-script',
               'value': context.properties['startup-script']
-            },
-            {
-              'key': 'block-project-ssh-keys',
-              'value': "true"
-            },
-            {
-              'key': 'ssh-keys',
-              'value': context.properties['ssh-keys']
             }
           ]
       },
