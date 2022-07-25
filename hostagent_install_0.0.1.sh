@@ -1,3 +1,4 @@
+echo $1
 sudo apt-get update -y
 sudo apt install wireguard -y
 sudo apt install unzip -y
