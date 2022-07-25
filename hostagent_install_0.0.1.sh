@@ -1,9 +1,6 @@
-echo dev
 echo $1
-
 sudo apt-get update -y
 sudo apt install wireguard -y
-echo $1
 sudo apt install unzip -y
 sudo apt install curl -y
 sudo apt install ipset -y
