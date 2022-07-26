@@ -77,9 +77,9 @@ EOL
   REG="$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/region)"
   if [[ $IP -eq "" ]]; then
     IP=$(curl ifconfig.me)
-    sed -i "s/node: .*/node: $IP/g" prometheus"$1".yml
+    sed -i "s/node: .*/node: $IP/g" prometheus-"$1".yml
   else
-   sed -i "s/node: .*/node: $IP-$REG/g" prometheus"$1".yml
+   sed -i "s/node: .*/node: $IP-$REG/g" prometheus-"$1".yml
   fi
 
 
