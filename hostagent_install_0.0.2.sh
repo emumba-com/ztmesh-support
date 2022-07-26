@@ -73,16 +73,16 @@ EOL
   [Install]
   WantedBy=multi-user.target
 EOL
-  wget https://ztmesh-support.s3.us-east-2.amazonaws.com/service-connector/prometheus"$1".yml
+  wget https://ztmesh-support.s3.us-east-2.amazonaws.com/service-connector/prometheus-"$1".yml
   IP="$(wget -q -O - http://169.254.169.254/latest/meta-data/local-ipv4)"
   REG="$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/region)"
   if [[ $IP -eq "" ]]; then
     IP=$(curl ifconfig.me)
-    sed -i "s/node: .*/node: $IP/g" prometheus"$1".yml
+    sed -i "s/node: .*/node: $IP/g" prometheus-"$1".yml
   else
-   sed -i "s/node: .*/node: $IP-$REG/g" prometheus"$1".yml
+   sed -i "s/node: .*/node: $IP-$REG/g" prometheus-"$1".yml
   fi
-  sudo mv prometheus"$1".yml prometheus.yml
+  sudo mv prometheus-"$1".yml prometheus.yml
   sudo mv prometheus.yml /etc/prometheus/
   sudo systemctl daemon-reload
   sudo systemctl start prometheus
