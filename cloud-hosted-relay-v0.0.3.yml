@@ -1,0 +1,449 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+   CloudFormation template for Cloud Hosted Relay.
+Parameters:
+  SecretName:
+    Type: String
+  BuildEnv:
+    Type: String
+    ConstraintDescription: Environment for Relay Node.
+  WorkspaceIdentifier:
+    Type: String
+  InstanceName:
+    Type: String
+    ConstraintDescription: Relay node name.
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t3.medium
+    AllowedValues:
+      - t3.nano
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+      - t3a.small
+      - t3a.medium
+      - t3a.large
+      - t3a.xlarge
+      - t3a.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  KeyPairName:
+    Type: String            #'AWS::EC2::KeyPair::KeyName'
+    Default: cloud-hosted-relay
+    ConstraintDescription: Name of an existing EC2 KeyPair.
+  myLaunchTemplateVersionNumber:
+    Default: "1"
+    Type: String
+  myEbsVolumeSize:
+    Default: "20"
+    Type: String
+    Description: EBS Volume Size to attach with instance.
+  VPCCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    ConstraintDescription: Must be a valid IP range in x.x.x.x/x notation
+    Description: The CIDR IP range of VPC
+    Type: String
+    Default: 10.0.0.0/16
+  PrivateSubnet1CIDR:
+    Description: Private Subnet 1 CIDR
+    Type: String
+    Default: 10.0.0.0/24
+  PrivateSubnet2CIDR:
+    Description: Private Subnet 2 CIDR
+    Type: String
+    Default: 10.0.1.0/24
+  PublicSubnet1CIDR:
+    Description: Public Subnet 1 CIDR
+    Type: String
+    Default: 10.0.2.0/24
+  PublicSubnet2CIDR:
+    Description: Public Subnet 2 CIDR
+    Type: String
+    Default: 10.0.3.0/24
+
+
+Mappings:
+  AWSAMIRegionMap:
+    # AMI:
+    #   US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
+    us-east-1:
+      US1604HVM: ami-04505e74c0741db8d
+    us-east-2:
+      US1604HVM: ami-0fb653ca2d3203ac1
+    us-west-1:
+      US1604HVM: ami-01f87c43e618bf8f0
+    us-west-2:
+      US1604HVM: ami-0892d3c7ee96c0bf7
+    af-south-1:
+      US1604HVM: ami-030b8d2037063bab3
+    ap-northeast-1:
+      US1604HVM: ami-088da9557aae42f39
+    ap-northeast-2:
+      US1604HVM: ami-0454bb2fefc7de534
+    ap-northeast-3:
+      US1604HVM: ami-096c4b6e0792d8c16
+    ap-south-1:
+      US1604HVM: ami-0851b76e8b1bce90b
+    ap-southeast-1:
+      US1604HVM: ami-055d15d9cfddf7bd3
+    ap-southeast-2:
+      US1604HVM: ami-0b7dcd6e6fd797935
+    ap-southeast-3:
+      US1604HVM: ami-0a9c8e0ccf1d85f67
+    ca-central-1:
+      US1604HVM: ami-0aee2d0182c9054ac
+    eu-central-1:
+      US1604HVM: ami-0d527b8c289b4af7f
+    eu-west-1:
+      US1604HVM: ami-08ca3fed11864d6bb
+    eu-west-2:
+      US1604HVM: ami-0015a39e4b7c0966f
+    eu-west-3:
+      US1604HVM: ami-0c6ebbd55ab05f070
+    eu-north-1:
+      US1604HVM: ami-092cce4a19b438926
+    eu-south-1:
+      US1604HVM: ami-0d49110b200671cd8
+    me-south-1:
+      US1604HVM: ami-0f7b49dc4bc2b14cf
+    sa-east-1:
+      US1604HVM: ami-090006f29ecb2d79a
+
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Join ['-',['cloud-hosted-relay', !Ref WorkspaceIdentifier , "vpc", !Ref BuildEnv, !Ref 'AWS::Region', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join ['-',['cloud-hosted-relay', !Ref WorkspaceIdentifier , 'igw', !Ref BuildEnv, !Ref 'AWS::Region', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Join [' | ',['cloud-hosted-relay', !Ref WorkspaceIdentifier , 'public-subnet-1', !Ref BuildEnv, !Select [ 0, !GetAZs '' ], !Sub '${PublicSubnet1CIDR}', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Join [' | ',['cloud-hosted-relay', !Ref WorkspaceIdentifier , 'public-subnet-2', !Ref BuildEnv, !Select [ 1, !GetAZs '' ], !Sub '${PublicSubnet2CIDR}', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Join [' | ',['cloud-hosted-relay', !Ref WorkspaceIdentifier , 'rt-pulic', !Ref BuildEnv, !Ref 'AWS::Region', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+
+  RelayNodeServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      LaunchTemplate:
+        LaunchTemplateId: !Ref MyLaunchTemplate
+        Version: !Ref myLaunchTemplateVersionNumber
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceName
+        - Key: Identifier
+          Value: !Join ['-', ['relay-node', !Ref InstanceName]]
+        - Key: Environment
+          Value: !Ref BuildEnv
+
+  MyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Join ['-', ['cloud-hosted-relay-template', !Ref WorkspaceIdentifier , !Ref BuildEnv, !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+      LaunchTemplateData: 
+          BlockDeviceMappings: 
+            - DeviceName: /dev/sda1
+              Ebs:
+                VolumeSize: !Ref myEbsVolumeSize
+                VolumeType: gp3
+                DeleteOnTermination: true
+                Encrypted: true
+          CreditSpecification:
+            CpuCredits: standard
+          ImageId: !FindInMap 
+            - AWSAMIRegionMap
+            - !Ref 'AWS::Region'
+            - US1604HVM
+          IamInstanceProfile: 
+            Arn: !GetAtt InstanceProfile.Arn
+          KeyName: !Ref KeyPairName
+          InstanceType: !Ref InstanceType
+          SecurityGroupIds: [ !GetAtt RelaySecurityGroup.GroupId ]
+          UserData:
+            Fn::Base64: !Sub |
+              #!/bin/bash -xe
+              apt update -y
+              apt install jq unzip -y
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              ./aws/install
+
+
+              wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+              tar xvfz node_exporter-*.*-amd64.tar.gz
+              mv node_exporter-*.*-amd64/node_exporter /usr/local/bin/
+              useradd -rs /bin/false node_exporter
+              cat >/etc/systemd/system/node_exporter.service << 'EOL'
+              [Unit]
+              Description=Node Exporter
+              After=network.target
+              [Service]  
+              User=node_exporter
+              Group=node_exporter
+              Type=simple
+              ExecStart=/usr/local/bin/node_exporter --collector.systemd
+              [Install]
+              WantedBy=multi-user.target
+              EOL
+              systemctl daemon-reload
+              systemctl start node_exporter
+              systemctl enable node_exporter
+              
+              wget https://ztmesh-support.s3.us-east-2.amazonaws.com/static_files/systemd_exporter
+              mv systemd_exporter /usr/local/bin/
+              sudo chmod +x /usr/local/bin/systemd_exporter 
+
+              cat >/etc/systemd/system/systemd_exporter.service << 'EOL'
+              [Unit]  
+              Description=Systemd exporter  service
+              After=network.target
+              [Service]      
+              ExecStart=/usr/local/bin/systemd_exporter --collector.unit-whitelist=relayagent.service
+              Restart=always    
+              RestartSec=10    
+              KillSignal=SIGINT
+              SyslogIdentifier=systemd_exporter-service      
+              PrivateTmp=true  
+              [Install]      
+              WantedBy=multi-user.target
+              EOL
+
+              sudo systemctl daemon-reload
+              systemctl start systemd_exporter.service 
+              systemctl enable systemd_exporter.service 
+
+              
+
+              useradd --no-create-home --shell /bin/false prometheus
+              mkdir  /etc/prometheus
+              mkdir  /var/lib/prometheus
+              mkdir /data-agent
+              chown -R prometheus /data-agent
+              chown prometheus:prometheus /etc/prometheus
+              curl -LO https://github.com/prometheus/prometheus/releases/download/v2.32.0/prometheus-2.32.0.linux-amd64.tar.gz
+              tar xvf prometheus-2.32.0.linux-amd64.tar.gz
+              cp prometheus-2.32.0.linux-amd64/prometheus /usr/local/bin/
+              chown prometheus:prometheus /usr/local/bin/prometheus
+              sudo cp -r prometheus-2.32.0.linux-amd64/consoles /etc/prometheus
+              sudo cp -r prometheus-2.32.0.linux-amd64/console_libraries /etc/prometheus
+              rm -rf prometheus-2.32.0.linux-amd64.tar.gz prometheus-2.32.0.linux-amd64
+              sudo chown -R prometheus:prometheus /etc/prometheus
+              sudo chown -R prometheus:prometheus /var/lib/prometheus
+
+              cat >/etc/systemd/system/prometheus.service << 'EOL'
+              [Unit]
+              Description=Prometheus
+              Wants=network-online.target
+              After=network-online.target
+              [Service]
+              User=prometheus
+              Group=prometheus
+              Type=simple
+              ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --enable-feature=agent
+              [Install]
+              WantedBy=multi-user.target
+              EOL
+
+              wget https://ztmesh-support-${BuildEnv}.s3.us-east-2.amazonaws.com/prometheus-${BuildEnv}.yml
+              EC2IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+              EC2ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+              REG=$(curl http://169.254.169.254/latest/meta-data/placement/region)
+              sed -i "s/node: .*/node: $EC2IP-$REG/g" prometheus-${BuildEnv}.yml
+              sudo mv prometheus-${BuildEnv}.yml prometheus.yml
+              sudo mv prometheus.yml /etc/prometheus/
+              sudo systemctl daemon-reload
+              sudo systemctl start prometheus
+              sudo systemctl enable prometheus
+
+
+              mkdir -p /root/.relay-agent
+              cat >/root/.relay-agent/config.json << 'EOL'
+              {
+                "id": "value_1",
+                "name": "value_2",
+                "login_config": {
+                  "access_key_id": "value_3",
+                  "secret_access_key": "value_4"
+                }
+              }
+              EOL
+              cat >/root/.relay-agent/instance_name << 'EOL'
+              instance_name
+              EOL
+              sed -i "s~instance_name~${InstanceName}~g" /root/.relay-agent/instance_name
+              sed -i "s~value_1~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .id)~g" /root/.relay-agent/config.json
+              sed -i "s~value_2~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .name)~g" /root/.relay-agent/config.json
+              sed -i "s~value_3~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .access_key_id)~g" /root/.relay-agent/config.json
+              sed -i "s~value_4~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .secret_access_key)~g" /root/.relay-agent/config.json
+              curl -L bit.ly/relayagent | sudo bash -s ${BuildEnv}
+              relay-agent-cli start
+              
+      TagSpecifications:
+          - ResourceType: launch-template
+            Tags: 
+              - Key: Name
+                Value: !Join ['-', ['cloud-hosted-relay-template', !Ref WorkspaceIdentifier , !Ref BuildEnv, !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+              - Key: Environment
+                Value: !Ref BuildEnv
+
+  RelayElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  AssociateElasticIP:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt RelayElasticIP.AllocationId
+      InstanceId: !Ref RelayNodeServer
+
+  Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  SecretReadPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-', ['secret-read-policy', !Ref WorkspaceIdentifier , !Ref BuildEnv, !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+            - 'secretsmanager:GetSecretValue'
+            Resource: 
+            - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}*'
+      Roles:
+        - !Ref Role
+  InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    DependsOn: SecretReadPolicy
+    Properties:
+      Path: /
+      Roles:
+        - !Ref Role
+
+  RelaySecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Cloud Hosted Relay Node Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: tcp
+          FromPort: 8888
+          ToPort: 8888
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: udp
+          FromPort: 51820
+          ToPort: 51820
+          CidrIp: "0.0.0.0/0"
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Join ['-', ['cloud-hosted-relay-sg', !Ref WorkspaceIdentifier , !Ref BuildEnv, !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+
+
+Outputs:
+  Region:
+    Description: The Region of the Relay Node
+    Value: !Ref 'AWS::Region'
+  AvailabilityZone:
+    Description: Availability zone of the Relay Node
+    Value: !GetAtt RelayNodeServer.AvailabilityZone
+  RelayNodePublicIP:
+    Description: Public IP of Relay Node
+    Value: !GetAtt RelayNodeServer.PublicIp
+  RelayNodeDnsName:
+    Description: DNS Name of Relay Node
+    Value: !GetAtt RelayNodeServer.PublicDnsName
+  SecurityGroupId:
+    Description: Security group id for cloud hosted relay
+    Value: !GetAtt RelaySecurityGroup.GroupId
