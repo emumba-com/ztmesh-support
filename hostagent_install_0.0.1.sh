@@ -69,7 +69,7 @@ EOL
   User=prometheus
   Group=prometheus
   Type=simple
-  ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --enable-feature=agent
+  ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --log.level=error --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --enable-feature=agent
   [Install]
   WantedBy=multi-user.target
 EOL
