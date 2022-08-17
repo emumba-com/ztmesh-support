@@ -52,8 +52,8 @@ EOL
   chown prometheus:prometheus /etc/prometheus
   curl -LO https://github.com/prometheus/prometheus/releases/download/v2.32.0/prometheus-2.32.0.linux-amd64.tar.gz
   tar xvf prometheus-2.32.0.linux-amd64.tar.gz
-  cp prometheus-2.32.0.linux-amd64/prometheus /usr/local/bin/
-  chown prometheus:prometheus /usr/local/bin/prometheus
+  sudo cp prometheus-2.32.0.linux-amd64/prometheus /usr/local/bin/
+  sudo chown prometheus:prometheus /usr/local/bin/prometheus
   sudo cp -r prometheus-2.32.0.linux-amd64/consoles /etc/prometheus
   sudo cp -r prometheus-2.32.0.linux-amd64/console_libraries /etc/prometheus
   rm -rf prometheus-2.32.0.linux-amd64.tar.gz prometheus-2.32.0.linux-amd64
