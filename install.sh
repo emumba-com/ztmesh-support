@@ -1,5 +1,6 @@
 #/bin/bash
 if [ "$1" == "dev" ]; then
+   echo "$#"
    curl -L https://raw.githubusercontent.com/extremenetworks/ztmesh-support/host-agent/hostagent_install_0.0.2.sh | sudo bash -s $1 
    
 elif [ "$1" == "staging" ]; then
