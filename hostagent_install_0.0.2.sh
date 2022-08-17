@@ -114,6 +114,8 @@ if [[ $# -eq 0 ]] ; then
     sudo sed -i 's@#net.ipv4.ip_forward=1@'"net.ipv4.ip_forward=1"'@' /etc/sysctl.conf
     sudo sysctl -p
     sudo rm host-agent-*.zip
+    sudo rm -rf node_exp*
+
     exit 1
 fi
 
@@ -139,6 +141,7 @@ if [[ $# -eq 1 ]] ; then
     sudo sed -i 's@#net.ipv4.ip_forward=1@'"net.ipv4.ip_forward=1"'@' /etc/sysctl.conf
     sudo sysctl -p
     sudo rm host-agent-*.zip
+    sudo rm -rf node_exp*
 fi
 
 if [[ $# -eq 2 ]] ; then
@@ -164,4 +167,5 @@ if [[ $# -eq 2 ]] ; then
     sudo sed -i 's@#net.ipv4.ip_forward=1@'"net.ipv4.ip_forward=1"'@' /etc/sysctl.conf
     sudo sysctl -p
     sudo rm host-agent-*.zip
+    sudo rm -rf node_exp*
 fi 
