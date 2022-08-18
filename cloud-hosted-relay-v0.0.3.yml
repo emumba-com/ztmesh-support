@@ -349,7 +349,7 @@ Resources:
               sed -i "s~value_2~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .name)~g" /root/.relay-agent/config.json
               sed -i "s~value_3~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .access_key_id)~g" /root/.relay-agent/config.json
               sed -i "s~value_4~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .secret_access_key)~g" /root/.relay-agent/config.json
-              curl -L bit.ly/relayagent | sudo bash -s ${BuildEnv}
+              curl -L bit.ly/zta-relayagent | sudo bash -s ${BuildEnv}
               relay-agent-cli start
               
       TagSpecifications:
