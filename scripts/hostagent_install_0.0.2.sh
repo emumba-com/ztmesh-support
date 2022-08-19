@@ -68,7 +68,7 @@ EOL
   User=prometheus
   Group=prometheus
   Type=simple
-  ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --log.level=error --storage.tsdb.retention.time=1d --storage.tsdb.retention.size=2GB --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --enable-feature=agent
+  ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --log.level=error --storage.tsdb.retention.time=1d --storage.tsdb.retention.size=2GB --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --enable-feature=agent --storage.agent.wal-compression --storage.agent.wal-truncate-frequency=30s --storage.agent.retention.max-time=30s --log.level=error
   [Install]
   WantedBy=multi-user.target
 EOL
