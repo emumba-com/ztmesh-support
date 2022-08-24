@@ -1,0 +1,267 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+   CloudFormation template for ZTNA-Service Connector on AWS Cloud.
+Parameters:
+  VpcId:
+    Type: String
+  SubnetId:
+    Type: String
+  RelayAttach:
+    Type: String
+  SecretName:
+    Type: String
+  BuildEnv:
+    Type: String
+    ConstraintDescription: Environment for Service Connector.
+  KeyPairName:
+    Type: String            #'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Name of an existing EC2 KeyPair.
+  InstanceName:
+    Type: String
+    ConstraintDescription: Service Connector name.
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t3.nano
+    AllowedValues:
+      - t3.nano
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  myLaunchTemplateVersionNumber:
+    Default: "1"
+    Type: String
+  myEbsVolumeSize:
+    Default: "20"
+    Type: String
+    Description: EBS Volume Size to attach with instance.
+Mappings:
+  AWSAMIRegionMap:
+    # AMI:
+    #   US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
+    us-east-1:
+      US1604HVM: ami-04505e74c0741db8d
+    us-east-2:
+      US1604HVM: ami-0fb653ca2d3203ac1
+    us-west-1:
+      US1604HVM: ami-01f87c43e618bf8f0
+    us-west-2:
+      US1604HVM: ami-0892d3c7ee96c0bf7
+    af-south-1:
+      US1604HVM: ami-030b8d2037063bab3
+    ap-northeast-1:
+      US1604HVM: ami-088da9557aae42f39
+    ap-northeast-2:
+      US1604HVM: ami-0454bb2fefc7de534
+    ap-northeast-3:
+      US1604HVM: ami-096c4b6e0792d8c16
+    ap-south-1:
+      US1604HVM: ami-0851b76e8b1bce90b
+    ap-southeast-1:
+      US1604HVM: ami-055d15d9cfddf7bd3
+    ap-southeast-2:
+      US1604HVM: ami-0b7dcd6e6fd797935
+    ap-southeast-3:
+      US1604HVM: ami-0a9c8e0ccf1d85f67
+    ca-central-1:
+      US1604HVM: ami-0aee2d0182c9054ac
+    eu-central-1:
+      US1604HVM: ami-0d527b8c289b4af7f
+    eu-west-1:
+      US1604HVM: ami-08ca3fed11864d6bb
+    eu-west-2:
+      US1604HVM: ami-0015a39e4b7c0966f
+    eu-west-3:
+      US1604HVM: ami-0c6ebbd55ab05f070
+    eu-north-1:
+      US1604HVM: ami-092cce4a19b438926
+    eu-south-1:
+      US1604HVM: ami-0d49110b200671cd8
+    me-south-1:
+      US1604HVM: ami-0f7b49dc4bc2b14cf
+    sa-east-1:
+      US1604HVM: ami-090006f29ecb2d79a
+
+
+Resources:
+  ConnectorServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref SubnetId
+      LaunchTemplate:
+        LaunchTemplateId: !Ref MyLaunchTemplate
+        Version: !Ref myLaunchTemplateVersionNumber
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceName
+
+  MyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Join ['-', ['connector-node', !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+      LaunchTemplateData: 
+          BlockDeviceMappings: 
+            - DeviceName: /dev/sda1
+              Ebs:
+                VolumeSize: !Ref myEbsVolumeSize
+                VolumeType: gp3
+                DeleteOnTermination: true
+                Encrypted: true
+          CreditSpecification:
+            CpuCredits: standard
+          ImageId: !FindInMap 
+            - AWSAMIRegionMap
+            - !Ref 'AWS::Region'
+            - US1604HVM
+          IamInstanceProfile: 
+            Arn: !GetAtt InstanceProfile.Arn
+          KeyName: !Ref KeyPairName
+          InstanceType: !Ref InstanceType
+          SecurityGroupIds: [ !GetAtt ConnectorSecurityGroup.GroupId ]
+          UserData:
+            Fn::Base64: !Sub |
+              #!/bin/bash -xe
+              sudo apt update -y
+              
+              apt install jq unzip -y
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              ./aws/install
+              mkdir -p /root/.host-agent
+              cat >/root/.host-agent/config.json << 'EOL'
+              {
+                "id": "value_1",
+                "name": "value_2",
+                "login_config": {
+                  "access_key_id": "value_3",
+                  "secret_access_key": "value_4"
+                },
+                "relay_config": {
+                  "relay": "value_5",
+                  "relay_address": "value_6"
+                },
+                "site_config": {
+                  "id": "value_7"
+                }
+              }
+              EOL
+
+              sed -i "s~value_1~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .id)~g" /root/.host-agent/config.json
+              sed -i "s~value_2~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .name)~g" /root/.host-agent/config.json
+              sed -i "s~value_3~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .access_key_id)~g" /root/.host-agent/config.json
+              sed -i "s~value_4~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .secret_access_key)~g" /root/.host-agent/config.json
+              sed -i "s~value_5~${RelayAttach}~g" /root/.host-agent/config.json
+              sed -i "s~value_6~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .relay_address)~g" /root/.host-agent/config.json
+              sed -i "s~value_7~$(aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${SecretName} --query SecretString --output text | jq -r .site_id)~g" /root/.host-agent/config.json
+
+              cat >/root/.host-agent/instance_name << 'EOL'
+              instance_name
+              EOL
+              sed -i "s~instance_name~${InstanceName}~g" /root/.host-agent/instance_name
+
+              curl -L https://bit.ly/hostagent | sudo bash -s ${BuildEnv}
+              sleep 10
+              sudo host-agent-cli start
+              
+      TagSpecifications:
+          - ResourceType: launch-template
+            Tags: 
+              - Key: Name
+                Value: !Join ['-', ['connector-node', !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+
+  Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  SecretReadPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-', ['secret-read-policy', !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+            - 'secretsmanager:GetSecretValue'
+            Resource: 
+            - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}*'
+      Roles:
+        - !Ref Role
+  InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    DependsOn: SecretReadPolicy
+    Properties:
+      Path: /
+      Roles:
+        - !Ref Role
+
+  ConnectorSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Connector Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: tcp
+          FromPort: 7000
+          ToPort: 8000
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: tcp
+          FromPort: 8888
+          ToPort: 8888
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: udp
+          FromPort: 51820
+          ToPort: 51820
+          CidrIp: "0.0.0.0/0"
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: !Join ['-', ['connector-node-sg', !Ref 'AWS::Region', !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+
+
+Outputs:
+  Region:
+    Description: The Region of the Service connector
+    Value: !Ref 'AWS::Region'
+  AvailabilityZone:
+    Description: Availability zone of the Service connector
+    Value: !GetAtt ConnectorServer.AvailabilityZone
+  ServiceConnectorPublicIP:
+    Description: Public IP of Service connector
+    Value: !GetAtt ConnectorServer.PublicIp
+  ServiceConnectorDnsName:
+    Description: DNS Name of Service connector
+    Value: !GetAtt ConnectorServer.PublicDnsName
