@@ -178,7 +178,7 @@ Resources:
               EOL
               sed -i "s~instance_name~${InstanceName}~g" /root/.host-agent/instance_name
 
-              curl -L https://bit.ly/hostagent-temp | sudo bash -s ${BuildEnv}
+              curl -L https://bit.ly/zta-hostagent | sudo bash -s ${BuildEnv}
               sleep 10
               sudo host-agent-cli start
               
