@@ -71,7 +71,7 @@ def GenerateConfig(context):
           'boot': True,
           'initializeParams': {
               'diskName': name_prefix + '-disk',
-              'sourceImage': ''.join([COMPUTE_URL_BASE, 'projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts'])
+              'sourceImage': ''.join([COMPUTE_URL_BASE, 'projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts']) # https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts
               },
           }],
       'networkInterfaces': [{
