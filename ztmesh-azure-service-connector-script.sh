@@ -24,11 +24,13 @@ cat >$FILEPATH/config.json << 'EOL'
   },
   "relay_config": {
     "relay": "value_5",
-    "relay_address": "value_6"
+    "endpoint": "value_6",
+    "id" : "value_8"
   },
   "site_config": {
     "id": "value_7"
-  }
+  },
+  "wc_url": "value_9"
 }
 EOL
 
@@ -41,7 +43,8 @@ sed -i "s~value_4~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/secre
 sed -i "s~value_5~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-attach?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 sed -i "s~value_6~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-address?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 sed -i "s~value_7~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/site-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
-
+sed -i "s~value_8~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
+sed -i "s~value_9~$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/wc-urld?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')~g" $FILEPATH/config.json
 cat $FILEPATH/config.json
 
 cat >$FILEPATH/instance_name << 'EOL'
