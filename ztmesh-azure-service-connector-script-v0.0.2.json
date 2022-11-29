@@ -39,7 +39,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('sudo sh ztmesh-azure-service-connector-script-v0.0.1.sh', ' ', parameters('virtualMachineName'), ' ', parameters('vaultName'), ' ', parameters('buildEnv'), ' ', parameters('hostagent_install_script_url'))]",
                     "fileUris": [
-                        "https://raw.githubusercontent.com/extremenetworks/ztmesh-support/develop/ztmesh-azure-service-connector-script-v0.0.1.sh"
+                        "https://raw.githubusercontent.com/extremenetworks/ztmesh-support/develop/ztmesh-azure-service-connector-script-v0.0.2.sh"
                     ]
                 }
             }
