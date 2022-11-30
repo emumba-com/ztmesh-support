@@ -18,7 +18,7 @@
                 "description": "Location for all resources."
             }
         },
-        "hostagent_install_script_url": {
+        "hostAgentInstallScriptUrl": {
             "type": "String"
         }
     },
@@ -37,7 +37,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[concat('sudo sh ztmesh-azure-service-connector-script-v0.0.1.sh', ' ', parameters('virtualMachineName'), ' ', parameters('vaultName'), ' ', parameters('buildEnv'), ' ', parameters('hostagent_install_script_url'))]",
+                    "commandToExecute": "[concat('sudo sh ztmesh-azure-service-connector-script-v0.0.1.sh', ' ', parameters('virtualMachineName'), ' ', parameters('vaultName'), ' ', parameters('buildEnv'), ' ', parameters('hostAgentInstallScriptUrl'))]",
                     "fileUris": [
                         "https://raw.githubusercontent.com/extremenetworks/ztmesh-support/develop/ztmesh-azure-service-connector-script-v0.0.2.sh"
                     ]
