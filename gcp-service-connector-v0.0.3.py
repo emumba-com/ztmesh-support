@@ -48,7 +48,7 @@ def GenerateConfig(context):
             },
             {
               'key': 'block-project-ssh-keys',
-              'value': "true"
+              'value': "false"
             },
             {
               'key': 'ssh-keys',
