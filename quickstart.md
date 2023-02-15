@@ -1,3 +1,8 @@
+<!-- metadata
+{
+  "json": "quickstart.json"
+}
+-->
 # Extreme ZTNA: GCP Integration
 
 To restart this tutorial, run this command in the Cloud Shell terminal:
