@@ -21,5 +21,5 @@ In this quickstart, you use Deployment Manager to deploy a Service Account that 
 2. Create the deployment in your specified project:
 
     ```sh
-	./create-integration-sa.sh {{project-ids}} {{env}}
+	./create-integration-sa.sh {{project-id}} {{env}}
     ```
