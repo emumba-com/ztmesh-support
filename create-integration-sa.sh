@@ -3,6 +3,9 @@
 PROJECT_ID=$1
 ENV=$2
 
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+
 # Set project for command-line tool
 gcloud config set project $PROJECT_ID
 
@@ -12,4 +15,9 @@ sed -i "s~INSERT_PROJECT_ID~$PROJECT_ID~g" service-account.yaml
 sed -i "s~extreme-ztna-sa$~ext-zta-sa$ENV~g" service-account.yaml
 
 # Create deployment
-gcloud deployment-manager deployments create ztmesh-deployment$ENV --config service-account.yaml
+if `gcloud iam service-accounts list | grep -Fq ext-zta-sa-zta-qa-loadtesting`
+then
+  echo -e  "${GREEN}Service Account \"ext-zta-sa$ENV\" already exists. Please proceeed with the next steps...${ENDCOLOR}"
+else
+  gcloud deployment-manager deployments create ztmesh-deployment$ENV --config service-account.yaml
+fi
