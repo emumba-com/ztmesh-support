@@ -9,7 +9,7 @@ gcloud config set project $PROJECT_ID
 # Update Project-id
 ENV=-$ENV
 sed -i "s~INSERT_PROJECT_ID~$PROJECT_ID~g" service-account.yaml
-sed -i "s~extreme-ztna-sa~extreme-ztna-sa$ENV~g" service-account.yaml
+sed -i "s~extreme-ztna-sa$~ext-zta-sa$ENV~g" service-account.yaml
 
 # Create deployment
 gcloud deployment-manager deployments create ztmesh-deployment$ENV --config service-account.yaml
