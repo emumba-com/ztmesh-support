@@ -15,7 +15,7 @@ sed -i "s~INSERT_PROJECT_ID~$PROJECT_ID~g" service-account.yaml
 sed -i "s~extreme-ztna-sa$~ext-zta-sa$ENV~g" service-account.yaml
 
 # Create deployment
-if `gcloud iam service-accounts list | grep -Fq ext-zta-sa-zta-qa-loadtesting`
+if `gcloud iam service-accounts list | grep -Fq ext-zta-sa$ENV`
 then
   echo -e  "${GREEN}Service Account \"ext-zta-sa$ENV\" already exists. Please proceeed with the next steps...${ENDCOLOR}"
 else
