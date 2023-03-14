@@ -4,6 +4,7 @@ PROJECT_ID=$1
 ENV=$2
 
 GREEN="\e[32m"
+RED=
 ENDCOLOR="\e[0m"
 
 # Set project for command-line tool
@@ -19,5 +20,10 @@ if `gcloud iam service-accounts list | grep -Fq ext-zta-sa$ENV`
 then
   echo -e  "${GREEN}Service Account \"ext-zta-sa$ENV\" already exists. Please proceeed with the next steps...${ENDCOLOR}"
 else
-  gcloud deployment-manager deployments create ztmesh-deployment$ENV --config service-account.yaml
+  if `gcloud deployment-manager deployments list --filter 'STATUS: DONE' | grep -Fq ztmesh-deployment$ENV`
+  then
+    echo -e  "${RED}Deployment \"ztmesh-deployment$ENV\" already exists. Please check the deployment status from Deployment Manager section. Delete deployment if status is \"FAILED\"! ${ENDCOLOR}"
+  else
+    gcloud deployment-manager deployments create ztmesh-deployment$ENV --config service-account.yaml
+  fi
 fi
