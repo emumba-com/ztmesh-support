@@ -4,8 +4,8 @@ PROJECT_ID=$1
 ENV=$2
 
 GREEN="\e[32m"
-RED=
-ENDCOLOR="\e[31m"
+RED="\e[31m"
+ENDCOLOR="\e[0m"
 
 # Set project for command-line tool
 gcloud config set project $PROJECT_ID
