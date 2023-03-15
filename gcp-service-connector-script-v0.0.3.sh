@@ -14,7 +14,7 @@ echo "Creating config.json in path: ${FILEPATH}"
 
 mkdir -p $FILEPATH
 
-cat <<EOF > config.json
+cat <<EOF > $FILEPATH/config.json
 {
   "id": "value_1",
   "name": "value_2",
