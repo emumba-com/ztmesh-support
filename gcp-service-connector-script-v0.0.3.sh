@@ -13,7 +13,8 @@ apt update -y
 echo "Creating config.json in path: ${FILEPATH}"
 
 mkdir -p $FILEPATH
-cat >$FILEPATH/config.json << 'EOL'
+
+cat <<EOF > config.json
 {
   "id": "value_1",
   "name": "value_2",
@@ -38,7 +39,7 @@ cat >$FILEPATH/config.json << 'EOL'
     "compress": ""
   },
 }
-EOL
+EOF
 
 
 sed -i "s~value_1~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-id)~g" $FILEPATH/config.json
