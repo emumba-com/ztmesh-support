@@ -14,7 +14,7 @@ echo "Creating config.json in path: ${FILEPATH}"
 
 mkdir -p $FILEPATH
 
-cat >$FILEPATH/config.json << 'EOL'
+cat >$FILEPATH/config.json << EOL
 {
 "id": "value_1",
 "name": "value_2",
@@ -41,7 +41,7 @@ cat >$FILEPATH/config.json << 'EOL'
 "wc_url": "value_9",
 "version": "value_10",
 "build_env": "value_11",
-"aws_s3_bucket": "value_12",
+"aws_s3_bucket": "value_12"
 }
 EOL
 
