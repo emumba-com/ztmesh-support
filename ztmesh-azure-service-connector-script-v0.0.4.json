@@ -22,9 +22,11 @@
             "type": "String"
         },
         "connectorInstallMonitoring": {
+            "defaultValue": "false",
             "type": "String"
         },
         "connectorLoggingLevel": {
+            "defaultValue": "info",
             "type": "String"
         }
     },
