@@ -14,32 +14,36 @@ echo "Creating config.json in path: ${FILEPATH}"
 
 mkdir -p $FILEPATH
 
-cat <<EOF > $FILEPATH/config.json
+cat >$FILEPATH/config.json << 'EOL'
 {
-  "id": "value_1",
-  "name": "value_2",
-  "login_config": {
+"id": "value_1",
+"name": "value_2",
+"login_config": {
     "access_key_id": "value_3",
     "secret_access_key": "value_4"
   },
-  "relay_config": {
+"relay_config": {
     "relay": "value_5",
     "endpoint": "value_6",
     "id" : "value_8"   
   },
-  "site_config": {
+"site_config": {
     "id": "value_7"
   },
-  "wc_url": "value_9",
-  "logging": {
-    "level": "${LOG_LEVEL}",
-    "max_age": "",
-    "max_size": "",
-    "max_backups": "",
-    "compress": ""
+"status": false,
+"logging": {
+  "level": "${LOG_LEVEL}",
+  "max_age": "",
+  "max_size": "",
+  "max_backups": "",
+  "compress": ""
   },
+"wc_url": "value_9",
+"version": "value_10",
+"build_env": "value_11",
+"aws_s3_bucket": "value_12",
 }
-EOF
+EOL
 
 
 sed -i "s~value_1~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-id)~g" $FILEPATH/config.json
