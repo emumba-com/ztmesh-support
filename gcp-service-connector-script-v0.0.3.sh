@@ -46,17 +46,17 @@ cat >$FILEPATH/config.json << EOL
 EOL
 
 
-sed -i "s~value_1~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-id)~g" $FILEPATH/config.json
-sed -i "s~value_2~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-name)~g" $FILEPATH/config.json
-sed -i "s~value_3~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-access-key-id)~g" $FILEPATH/config.json
-sed -i "s~value_4~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-secret-access-key)~g" $FILEPATH/config.json
-sed -i "s~value_5~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-attach)~g" $FILEPATH/config.json
-sed -i "s~value_6~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-address)~g" $FILEPATH/config.json
-sed -i "s~value_7~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-site-id)~g" $FILEPATH/config.json
-sed -i "s~value_8~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-id)~g" $FILEPATH/config.json
-sed -i "s~value_9~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-wc-url)~g" $FILEPATH/config.json
-sed -i "s~value_10~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-build_env)~g" $FILEPATH/config.json
-sed -i "s~value_11~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-aws_s3_bucket)~g" $FILEPATH/config.json
+sed -i "s~\"value_1\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-id)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_2\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-name)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_3\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-access-key-id)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_4\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-secret-access-key)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_5\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-attach)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_6\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-address)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_7\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-site-id)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_8\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-id)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_9\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-wc-url)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_10\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-build_env)\"~g" $FILEPATH/config.json
+sed -i "s~\"value_11\"~\"$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-aws_s3_bucket)\"~g" $FILEPATH/config.json
 cat $FILEPATH/config.json
 
 cat >$FILEPATH/instance_name << 'EOL'
