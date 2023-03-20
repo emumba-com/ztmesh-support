@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IDENTIFIER=$1
-BUILD_ENV=$2
+SERVICE_CONNECTOR_VERSION=$2
 HOST_AGENT_INSTALL_SCRIPT_URL=$3
 INSTALL_MONITORING_TOOLS=$4
 LOG_LEVEL=$5
@@ -39,9 +39,9 @@ cat >$FILEPATH/config.json << EOL
   "compress": ""
   },
 "wc_url": "value_9",
-"version": "value_10",
-"build_env": "value_11",
-"aws_s3_bucket": "value_12"
+"version": "${SERVICE_CONNECTOR_VERSION}",
+"build_env": "value_10",
+"aws_s3_bucket": "value_11"
 }
 EOL
 
@@ -55,6 +55,8 @@ sed -i "s~value_6~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER
 sed -i "s~value_7~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-site-id)~g" $FILEPATH/config.json
 sed -i "s~value_8~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-relay-id)~g" $FILEPATH/config.json
 sed -i "s~value_9~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-wc-url)~g" $FILEPATH/config.json
+sed -i "s~value_10~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-build_env)~g" $FILEPATH/config.json
+sed -i "s~value_11~$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-aws_s3_bucket)~g" $FILEPATH/config.json
 cat $FILEPATH/config.json
 
 cat >$FILEPATH/instance_name << 'EOL'
@@ -65,5 +67,5 @@ sed -i "s~instance_name~$(gcloud secrets versions access "latest" --secret=$IDEN
 
 WEB_CONTROLLER_URL=$(gcloud secrets versions access "latest" --secret=$IDENTIFIER-wc-url)
 
-curl -L ${HOST_AGENT_INSTALL_SCRIPT_URL} | sudo bash -s ${BUILD_ENV} ${WEB_CONTROLLER_URL} ${INSTALL_MONITORING_TOOLS}
+curl -L ${HOST_AGENT_INSTALL_SCRIPT_URL} | sudo bash -s ${SERVICE_CONNECTOR_VERSION} ${WEB_CONTROLLER_URL} ${INSTALL_MONITORING_TOOLS}
 host-agent-cli start
