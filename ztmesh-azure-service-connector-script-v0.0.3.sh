@@ -59,8 +59,8 @@ sed -i "s~\"value_6\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets
 sed -i "s~\"value_7\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/site-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
 sed -i "s~\"value_8\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/relay-id?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
 sed -i "s~\"value_9\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/wc-url?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
-sed -i "s~\"value10\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/build_env?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
-sed -i "s~\"value_11\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/aws_s3_bucket?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
+sed -i "s~\"value10\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/build-env?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
+sed -i "s~\"value_11\"~\"$(curl -s "https://${VAULT_NAME}.vault.azure.net/secrets/aws-s3-bucket?api-version=2016-10-01" -H "Authorization: Bearer $access_token" | jq -r '.value')\"~g" $FILEPATH/config.json
 
 cat $FILEPATH/config.json
 
