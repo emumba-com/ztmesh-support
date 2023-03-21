@@ -32,6 +32,14 @@
         "adminUsername": {
             "type": "string",
             "defaultValue": "test"
+        },
+         "connectorInstallMonitoring": {
+            "defaultValue": "false",
+            "type": "String"
+        },
+        "connectorLoggingLevel": {
+            "defaultValue": "info",
+            "type": "String"
         }
     },
     "variables": {
