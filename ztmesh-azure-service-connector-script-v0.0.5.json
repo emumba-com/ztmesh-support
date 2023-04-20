@@ -47,7 +47,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('sudo sh ztmesh-azure-service-connector-script-v0.0.4.sh', ' ', parameters('virtualMachineName'), ' ', parameters('vaultName'), ' ', parameters('serviceConnectorVersion'), ' ', parameters('hostAgentInstallScriptUrl'), ' ', parameters('connectorInstallMonitoring'), ' ', parameters('connectorLoggingLevel'))]",
                     "fileUris": [
-                        "https://raw.githubusercontent.com/extremenetworks/ztmesh-support/ZTNA-5802/ztmesh-azure-service-connector-script-v0.0.4.sh"
+                        "https://raw.githubusercontent.com/extremenetworks/ztmesh-support/develop/ztmesh-azure-service-connector-script-v0.0.4.sh"
                     ]
                 }
             }
