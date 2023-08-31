@@ -25,7 +25,7 @@ else
   else
     sed -i "s~extreme-zta-bucket$~extreme-zta-bucket$ENV~g" create-bucket.yaml
     gcloud deployment-manager deployments create extreme-zta-bucket$ENV --config create-bucket.yaml
-    sed -i "s~webhook-domain-here$~$SUBDOMAIN~g"
+    sed -i "s~webhook-domain-here$~$SUBDOMAIN~g" webhook-function.py
     zip function-code.zip webhook-function.py requirements.txt
     gsutil cp function-code.zip gs://extreme-zta-bucket$ENV/
     gsutil acl ch -u AllUsers:R gs://extreme-zta-bucket$ENV/function-code.zip
