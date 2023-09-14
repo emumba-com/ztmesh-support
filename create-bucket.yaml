@@ -1,0 +1,8 @@
+imports:
+  - path: create-bucket.py
+
+resources:
+  - name: extreme-zta-bucket
+    type: create-bucket.py
+    properties:
+      bucketName: extreme-zta-bucket
