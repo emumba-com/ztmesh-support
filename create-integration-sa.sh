@@ -24,7 +24,7 @@ else
     echo -e  "${RED}Deployment \"ztmesh-deployment$ENV-${WORKSPACE_ID}\" already exists. Please check the deployment status from Deployment Manager section. Delete deployment if status is \"FAILED\"! ${ENDCOLOR}"
   else
     sed -i "s~INSERT_PROJECT_ID~$PROJECT_ID~g" service-account.yaml
-    sed -i "s~extreme-ztna-sa$~ext-zta-sa$ENV-${WORKSPACE_ID}~g" service-account.yaml
+    sed -i "s~extreme-ztna-sa$~ext-zta-sa$ENV-$WORKSPACE_ID~g" service-account.yaml
     gcloud deployment-manager deployments create ztmesh-deployment$ENV-${WORKSPACE_ID} --config service-account.yaml
   fi
 fi
