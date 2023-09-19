@@ -28,3 +28,6 @@ else
     gcloud deployment-manager deployments create ztmesh-deployment$ENV-${WORKSPACE_ID} --config service-account.yaml
   fi
 fi
+
+# Create Bucket
+bash ./create-bucket.sh $PROJECT_ID $ENV $WORKSPACE_ID
