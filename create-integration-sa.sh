@@ -12,6 +12,7 @@ ENDCOLOR="\e[0m"
 gcloud config set project $PROJECT_ID
 
 # Update Project-id
+SUBDOMAIN=$ENV
 ENV=-$ENV
 
 # Create deployment
@@ -30,4 +31,4 @@ else
 fi
 
 # Create Bucket
-bash ./create-bucket.sh $PROJECT_ID $ENV $WORKSPACE_ID
+bash ./create-bucket.sh $PROJECT_ID $SUBDOMAIN $WORKSPACE_ID
