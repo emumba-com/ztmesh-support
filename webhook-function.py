@@ -4,8 +4,7 @@ def send_to_webhook(data, context):
 
   if data:
       webhook_url = "https://webhook-domain-here.qa.xcloudiq.com/resource/api/v1/cloud-catalogue/gcp-cloud/events/"
-      headers = {'Content-Type': 'application/json', "Authorization": f"Api-Key {os.environ['SecretAccessKey']}"}
-
+      headers = {'Content-Type': 'application/json', "API_KEY": os.environ['secretAccessKey']}
       response = requests.post(webhook_url, json=data, headers=headers)
 
       if response.status_code == 200:
