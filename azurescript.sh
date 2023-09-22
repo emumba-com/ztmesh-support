@@ -15,11 +15,12 @@ echo "Configuring service principle.... :"
 # Create a service principal
 servicePrincipalName="my-ZTNA-$timestamp"
 roleName="Contributor"
-scope="/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName"
+scope="/subscriptions/$subscriptionId"
 
 # Create the service principal and assign a role
 az ad sp create-for-rbac --name "$servicePrincipalName" --role "$roleName" --scopes "$scope"
 
+echo "Fetching output..."
 sleep 30
 
 
@@ -35,7 +36,12 @@ userObjectId=$(az ad signed-in-user show --query id --output tsv)
 
 # Print the outputs
 echo" Please copy these outputs in azure-cloud integration fields" 
-echo "Application Client ID: $appId"
+
 echo "Subscription ID: $subscriptionId"
 echo "Tenant ID: $tenantID"
+echo "Application Client ID: $appId"
+echo "User Object ID: $userObjectId"
 echo "Application Client Secret: $aadAppClientSecret"
+
+
+
