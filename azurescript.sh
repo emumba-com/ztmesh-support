@@ -2,11 +2,13 @@
 
 echo "Available Subscriptions:"
 az account list --query "[].{Name:name, ID:id}" --output table
+echo ""
 read -p "Enter the Subscription ID: " subscriptionId
 
 # List available resource groups
 echo "Available Resource Groups:"
 az group list --subscription $subscriptionId --query "[].{Name:name}" --output table
+echo ""
 read -p "Enter the Resource Group Name: " resourceGroupName
 
 # Generate a timestamp
@@ -35,8 +37,9 @@ aadAppClientSecret=$(az ad sp credential reset --id "$appId"  --query 'password'
 userObjectId=$(az ad signed-in-user show --query id --output tsv)
 
 # Print the outputs
-echo" Please copy these outputs in azure-cloud integration fields" 
-
+echo ""
+echo "Please copy these outputs in azure-cloud integration fields" 
+echo ""
 echo "Subscription ID: $subscriptionId"
 echo "Tenant ID: $tenantID"
 echo "Application Client ID: $appId"
