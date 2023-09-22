@@ -6,10 +6,10 @@ echo ""
 read -p "Enter the Subscription ID: " subscriptionId
 
 # List available resource groups
-echo "Available Resource Groups:"
-az group list --subscription $subscriptionId --query "[].{Name:name}" --output table
-echo ""
-read -p "Enter the Resource Group Name: " resourceGroupName
+#echo "Available Resource Groups:"
+#az group list --subscription $subscriptionId --query "[].{Name:name}" --output table
+#echo ""
+#read -p "Enter the Resource Group Name: " resourceGroupName
 
 # Generate a timestamp
 timestamp=$(date +'%m-%d-%Y-%H-%M-%S')
