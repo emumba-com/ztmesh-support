@@ -1,12 +1,21 @@
 #!/bin/bash
+GREEN="\e[32m"
+RED="\e[31m"
+ENDCOLOR="\e[0m"
+
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 PROJECT_ID ENV WORKSPACE_ID"
+    exit 1
+fi
 
 PROJECT_ID=$1
 ENV=$2
 WORKSPACE_ID=$3
 
-GREEN="\e[32m"
-RED="\e[31m"
-ENDCOLOR="\e[0m"
+if ! [[ "$WORKSPACE_ID" =~ ^[0-9]+$ ]]; then
+    echo "WORKSPACE_ID must be a numeric value."
+    exit 1
+fi
 
 # Set project for command-line tool
 gcloud config set project $PROJECT_ID
