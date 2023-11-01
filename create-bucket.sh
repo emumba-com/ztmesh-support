@@ -25,9 +25,9 @@ SUBDOMAIN=$ENV
 ENV=-$ENV
 
 # Create bucket
-if `gcloud storage buckets list | grep -Fq extreme-zta-bucket$ENV-${WORKSPACE_ID}`
+if `gcloud storage buckets list | grep -Fq extreme-zta-bucket-${PROJECT_ID}$ENV-${WORKSPACE_ID}`
 then
-  echo -e  "${GREEN}Cloud Bucket \"extreme-zta-bucket$ENV-${WORKSPACE_ID}\" already exists. Please proceeed with the next steps...${ENDCOLOR}"
+  echo -e  "${GREEN}Cloud Bucket \"extreme-zta-bucket-${PROJECT_ID}$ENV-${WORKSPACE_ID}\" already exists. Please proceeed with the next steps...${ENDCOLOR}"
 else
   if `gcloud deployment-manager deployments list --filter 'STATUS: DONE' | grep -Fq extreme-zta-bucket$ENV-${WORKSPACE_ID}`
   then
